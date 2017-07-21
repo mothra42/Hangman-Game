@@ -6,12 +6,19 @@ var gameWords = ["awkward", "bagpipes", "banjo", "bungler", "croquet", "crypt", 
 //alphabet array is created to ensure user input is limited to alphabetic characters only
 var alphabet = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", 
 "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+
+//array that stores file path to images
+var img = ["assets/images/hangman9.png","assets/images/hangman8.png","assets/images/hangman7.png","assets/images/hangman6.png",
+"assets/images/hangman5.png","assets/images/hangman4.png","assets/images/hangman3.png","assets/images/hangman2.png","assets/images/hangman1.png",
+"assets/images/hangman0.png"];
 //guesses is the array of guessed letters inputed by the player
 var guesses = [];
 //array that holds correct guesses, will also be used to display guesses in html file
 var correct = [];
 //array to be filled with ["_","_","_"...] in thinker object.
 var unguessed = [];
+//maybe used to tell first input.
+var first = [];
 
 // tries, wins, losses are number variables that track how many times the player has won, lost, and current tries/guesses remaining
 // tries is initally set to 9 and will decrease as game progresses
@@ -42,30 +49,13 @@ function clearArray(x)
 //x is the string you want to check against and y is the guess
 function goodGuess(x,y)
 {
-	//counter is updated everytime there is a match between the guessed letter and a letter in word.
-	//as long as counter is greater than 0 at the end of goodGuess then it returns true.
-	var counter = 0;
-	
-	//logic for checking if guess is at least one letter in word
-	//for loop goes through each letter of the word and compares it to guess
-	for (var i = 0; i < x.length; i++) 
+
+	if(x.indexOf(y) === -1)
 	{
-			
-		if (x.charAt(i) === y)
-		{
-			correct.push(y);
-			counter++;
-		}
-			
+		return false;
 	}
-		if (counter > 0)
-			return true;
-		
-		if (counter === 0)
-		{
-			return false;
-			console.log("in else goodGuess");				
-		}
+	else
+		return true;
 }
 
 //function to change text in html file
@@ -92,8 +82,8 @@ function isWin()
 //problem solved?
 function isInArray(x,y)
 {
-	var counter =0;
-	
+	var counter = 0;
+
 	for (var i = 0; i < x.length; i++) 
 	{
 		if(x[i] === y)
@@ -101,10 +91,33 @@ function isInArray(x,y)
 			counter++;
 		}
 	}
-	if(counter > 0)
-		return true;
+
 	if(counter === 0)
+	{
 		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
+//function for checking if something is the first key press
+//returns false if other keys have been pressed before. 
+function isFirst()
+{
+		if(first.length === 0)
+		{
+			return true;
+		}
+		else
+			return false;
+
+}
+//changes the image according to how many tries are left.
+function changePic()
+{
+	document.getElementById("picture").src = img[tries];
 }
 
 //thinker is an object with functions as properties that work to think about the hangman problem
@@ -132,78 +145,90 @@ var thinker = {
 		}
 	} 
 };
+
 //generates first word for game
 //others are generated in win and loss condition.
 ranWord();
 console.log(word);
 thinker.createArray();
-//This function logs key presses and most game logic will be written inside
+
+
+
+//This triggers most of the code to run 
+//and also has the added benefit of allowing us to log key presses
 document.onkeyup = function(event) 
 {	
-	isInArray(guesses,guess);
+	//saves user input to guess
+	//ensures only lower case letters are used.
 	guess = event.key.toLowerCase();
-	changeText("hang-word", unguessed.toString());
-
-	//guess stores user key input toLowerCase() ensures that user input is stored lowercase only.
-	//guess will only be added to guesses if it is not a duplicate
-	if (isInArray(alphabet, guess) && isInArray(guesses, guess) === false)
-	{	
-		guesses.push(guess);
-	}
-	else if (isInArray(guesses, guess))
-	{
-		alert("You have already guessed that!");
-	}	
-	else
-	{
-		alert("Only enter letters please...");
-	}
+	//updates hang-word with the unguessed array.
+	changeText("hang-word", unguessed.toString().replace(/,/g," "));
+	
+	changePic();
 
 	//if goodGuess returns true the letters are displayed on screen.
-	if(goodGuess(word,guess))
+	if(goodGuess(word,guess) && !isFirst())
 	{
 		thinker.writeAnswer(guess);
-		changeText("hang-word", unguessed.toString());
+		changeText("hang-word", unguessed.toString().replace(/,/g," "));
 	}
 
 	//if goodGuess returns false and guess hasn't been guessed before then tries incremented by -1.
-	if(isInArray(guesses,guess) && goodGuess(word,guess) === false)
+	if(!goodGuess(word,guess) && !isInArray(guesses,guess) && isInArray(alphabet, guess) && !isFirst())
 	{	
 		tries--;
+		changePic();
 	}		
 	
+	//guess stores user key input toLowerCase() ensures that user input is stored lowercase only.
+	//guess will only be added to guesses if it is not a duplicate
+	if (isInArray(alphabet, guess) && !isInArray(guesses, guess) && !isFirst())
+	{	
+		guesses.push(guess);
+		//console.log(guesses);
+	}
+	
+	//Used to make isFirst work. porbably a better way to do this.
+	//Ensures that isFirst is not true past the first key being pressed
+	//first array is reset in win and lose condition
+	if(isFirst())
+	{
+		first.push(guess);
+	}
+
 	//lose condition when tries is 0. 
 	//resets guesses and correct arrays, adds 1 to losses, and chooses a new word
 	if (tries <= 0) 
 	{
-		alert("You Have Lost!");
 		clearArray(guesses);
 		clearArray(correct);
 		clearArray(unguessed);
+		clearArray(first);
 		losses++;
 		tries = 9;
 		ranWord();
 		thinker.createArray();
-		changeText("hang-word", unguessed.toString());
 		console.log(word);
+		changeText("hang-word", "Press any key to play again!");
 	}
+
 	//win condition
 	//clears arrays
 	//picks new word and recreates new unguessed array for word. 
 	if (isWin())
 	{
 		wins++;
-		alert("You Have Won!")
+		tries = 9;
 		clearArray(guesses);
 		clearArray(correct);
 		clearArray(unguessed);
+		clearArray(first);
 		ranWord();
 		thinker.createArray();
-		changeText("hang-word", unguessed.toString());
 		console.log(word);
+		changeText("hang-word", "Press any key to play again!");
 	}
 
-	console.log(correct);
 	//when game begins changes text to Hangman!
 	changeText("name", "Hangman!");
 	//displays number of wins
@@ -218,7 +243,6 @@ document.onkeyup = function(event)
 	//CURRENT PROBLEMS!!!! 
 	//tries is not working as expected
 	//first user input should not be counted as a guess
-	//fix isInArray function. problem listed above function
 	//I think that is it, but I need to make sure I'm not using indexOf with any more arrays indexOf() !== charAt()	!!!!!
 };        
 

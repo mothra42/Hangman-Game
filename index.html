@@ -4,16 +4,35 @@
 	<meta charset="UTF-8">
 	<title>Hangman</title>
 	<script type="text/javascript" src="assets/javascript/game.js"></script>
-
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="<s></s>ha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="assets/css/style.css">
 </head>
 <body>
-	<div id="game">
-		<h1 id="name">Press any key to begin</h1>
-		<p>Wins: <span id="win-text"></span></p>
-		<p>Losses: <span id ="loss-text"></span></p>
-		<p>Guess this word: <span id="hang-word"></span></p>
-		<p>Tries Remaining: <span id="try-text"></span></p>
-		<p>Guessed Letters: <span id="guess-text"></span></p>
+	<div class="container">
+		<header class="row">
+			<div class="col-lg-12">
+				<h1 id="name">Press any key to begin</h1>
+			</div>
+		</header>
+		<br/>
+		<div class="row">
+			<div class="col-lg-4" id="game">
+				<h3>Wins: <span id="win-text"></span></h3>
+				<h3>Losses: <span id ="loss-text"></span></h3>
+				<h3>Guess this word: <span id="hang-word"></span></p>
+				<h3>Tries Remaining: <span id="try-text"></span></h3>
+				<h3>Guessed Letters: <span id="guess-text"></span></h3>
+			</div>
+			<div class="col-lg-8">
+			<!-- I know I should always have an alt attribute, but I think this website looks better when it isn't there
+			So I'm removing it. -->
+			<img  id="picture" src="assets/images/hangman0.png" alt="hangman">
+			</div>
+		</div>
 	</div>
+	<audio autoplay loop>
+		<source src="assets/music/Giygas.mp3" type="audio/mpeg">
+	</audio>
 </body>
 </html>

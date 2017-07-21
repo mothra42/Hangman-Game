@@ -1,0 +1,21 @@
+h1 {
+	color: #D385DC;
+}
+
+h3 {
+	color: #b30000;
+}
+
+body {
+	background-image: url(../images/Gigas.gif);
+	background-size: cover;
+	overflow: auto;
+	box-sizing: border-box;
+}
+
+#picture {
+	width: 75%;
+	height: auto;
+	float: left;
+}
+
